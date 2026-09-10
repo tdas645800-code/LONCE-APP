@@ -1,0 +1,37 @@
+name: Build LONCE APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Extract LONCE project
+        run: |
+          unzip -o LONCE_app_starter.zip
+          cd lonce_app_starter
+          flutter pub get
+
+      - name: Build APK
+        run: |
+          cd lonce_app_starter
+          flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LONCE-APK
+          path: lonce_app_starter/build/app/outputs/flutter-apk/app-release.apk
